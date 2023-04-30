@@ -46,7 +46,7 @@ def simulate_queue(customers, inter_arrival_times, inter_arrival_probs, service_
 
         rowArray.append(int(row + 1))#Customer
         #RN_interval = int(input("Enter RN interval(t) for Customer "+str(row + 1)+": "))
-        RN_interval = random_arrival[row] if row != 0 else '----'
+        RN_interval = random_arrival[row] if row != 0 else ' '
         rowArray.append(RN_interval)#RN interval(t)
         #intervalValue = int(input("Enter interval(t) for Customer "+str(row + 1)+": "))
         match_row_time = df_time[df_time['random_ranges'].apply(lambda x: int(x.split('-')[0]) <= int(RN_interval) <= int(x.split('-')[1]))] if row != 0 else None
@@ -116,10 +116,10 @@ with col2:
     input5 = st.text_input('probs', key='input5')
     input6 = st.text_input('randoms', key='input6')
 
+valid_inputs = True
 
-# Convert inputs to lists of numbers on button click
-if st.button('Submit'):
     # Split the inputs by spaces and convert to lists of numbers
+try:
     costomers = int(input0)
     inter_arrival_times = [int(num) for num in input1.split(', ')]
     inter_arrival_probs = [float(num) for num in input2.split(', ')]
@@ -128,32 +128,37 @@ if st.button('Submit'):
     service_times = [int(num) for num in input4.split(', ')]
     service_probs = [float(num) for num in input5.split(', ')]
     random_service = [int(num) for num in input6.split(', ')]
+except ValueError:
+    valid_inputs = False
 
-    df_1, df_2, df_3 = simulate_queue(customers = costomers, inter_arrival_times = inter_arrival_times, inter_arrival_probs = inter_arrival_probs, 
-                                  service_times = service_times, service_probs = service_probs, random_arrival = random_arrival, random_service = random_service)
-    # Use streamlit_columns to create two columns
-    col1, col2 = st.columns(2)
+# Convert inputs to lists of numbers on button click
+if st.button('Simulate'):
+    if valid_inputs:
+        df_1, df_2, df_3 = simulate_queue(customers = costomers, inter_arrival_times = inter_arrival_times, inter_arrival_probs = inter_arrival_probs, 
+                                      service_times = service_times, service_probs = service_probs, random_arrival = random_arrival, random_service = random_service)
+        # Use streamlit_columns to create two columns
+        col1, col2 = st.columns(2)
 
-    df_2 = df_2.set_index('arrival_time')
-    df_3 = df_3.set_index('service_time')
+        df_2 = df_2.set_index('arrival_time')
+        df_3 = df_3.set_index('service_time')
 
-    # Display the dataframes in each column
-    with col1:
-        st.write('Table 1')
-        st.write(df_2)
+        # Display the dataframes in each column
+        with col1:
+            st.write('Table 1')
+            st.write(df_2)
 
-    with col2:
-        st.write('Table 2')
-        st.write(df_3)
-
-
-    df_1 = df_1.set_index('Customer')
-    st.write('Simulation Table')
-    st.write(df_1)
-
-    chart_data = df_1['Wait(t)']
-    st.write('Simulation Chart')
-    st.bar_chart(chart_data)
+        with col2:
+            st.write('Table 2')
+            st.write(df_3)
 
 
+        df_1 = df_1.set_index('Customer')
+        st.write('Simulation Table')
+        st.write(df_1)
 
+        chart_data = df_1['Wait(t)']
+        st.write('Simulation Chart')
+        st.bar_chart(chart_data)
+
+    if not valid_inputs:
+        st.error('Invalid input. Please enter only numbers separated by commas and spaces.')
