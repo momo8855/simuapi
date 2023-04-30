@@ -97,7 +97,16 @@ st.write("""
 # Simple  Queue Simulation App
 Shown are the **Simulation Table** and ***Chart*** of Analysis!
 """)
-input0 = st.text_input('Enter number of customers')
+
+default_customers = 10
+default_inter_arrival_times = '2, 3, 4, 5, 6'
+default_inter_arrival_probs = '0.30, 0.35, 0.20, 0.10, 0.05'
+default_random_arrival = '86, 10 , 88, 16, 51, 47, 67, 60, 24'
+default_service_times = '3, 4, 5, 6 , 7'
+default_service_probs = '0.25, 0.25, 0.20, 0.15, 0.15'
+default_random_service = '65, 16, 56, 43, 85, 28, 95, 12, 54, 78'
+
+input0 = st.text_input('Enter number of customers', default_customers)
 
 # Create two columns
 col1, col2 = st.columns(2)
@@ -105,16 +114,16 @@ col1, col2 = st.columns(2)
 # Input boxes for column 1
 with col1:
     st.header('Inter Arrival')
-    input1 = st.text_input('times', key='input1')
-    input2 = st.text_input('probs', key='input2')
-    input3 = st.text_input('randoms', key='input3')
+    input1 = st.text_input('times', default_inter_arrival_times, key='input1')
+    input2 = st.text_input('probs', default_inter_arrival_probs, key='input2')
+    input3 = st.text_input('randoms', default_random_arrival, key='input3')
 
 # Input boxes for column 2
 with col2:
     st.header('Service Time')
-    input4 = st.text_input('times', key='input4')
-    input5 = st.text_input('probs', key='input5')
-    input6 = st.text_input('randoms', key='input6')
+    input4 = st.text_input('times', default_service_times, key='input4')
+    input5 = st.text_input('probs', default_service_probs, key='input5')
+    input6 = st.text_input('randoms', default_random_service, key='input6')
 
 valid_inputs = True
 
