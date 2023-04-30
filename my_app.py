@@ -1,5 +1,9 @@
 import streamlit as st
 import pandas as pd
+import altair as alt
+import matplotlib.pyplot as plt
+import plotly.express as px
+import plotly.graph_objs as go
 
 def assign_range(row, df):
     prev_prob = 0 if row.name == 0 else df.loc[row.name-1, 'cumu_prob']
@@ -162,14 +166,29 @@ if st.button('Simulate'):
             st.write('Table 2')
             st.write(df_3)
 
-
-        df_1 = df_1.set_index('Customer')
+        # create a new row with empty values except for the "Service(t)", "Wait(t)", and "Sp(t)" columns
+        new_row = pd.DataFrame({'Customer': '', 'RNA': '', 'interval(t)': '', 'Arrival(t)': '', 'RNS': '', 'Service(t)': df_1['Service(t)'].sum(),
+           'Begin S(t)': '', 'Wait(t)': df_1['Wait(t)'].sum(), 'End S(t)': '', 'Sp(t)': df_1['Sp(t)'].sum(), 'ID(t)': ''}, index=[len(df_1)])
+        # add the new row to the bottom of the dataframe
+        df_1_new = pd.concat([df_1, new_row])
+        df_1_new = df_1_new.set_index('Customer')
         st.write('Simulation Table')
-        st.write(df_1)
+        st.write(df_1_new)
 
-        chart_data = df_1['Wait(t)']
-        st.write('Simulation Chart')
-        st.bar_chart(chart_data)
+        
+        fig = px.bar(df_1, x='Customer', y=['Wait(t)', 'Sp(t)'], barmode='group')
+
+        fig.update_layout(
+            title='Wait and Spent time for each customer',
+            xaxis=dict(title='Customer', tickmode='linear'),
+            yaxis_title='Time (M)',
+            legend_title='Metric',
+        )
+        st.plotly_chart(fig)
+    
+        
+
+
 
     if not valid_inputs:
         st.error('Invalid input. Please enter only numbers separated by commas and spaces.')
