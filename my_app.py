@@ -7,7 +7,7 @@ def assign_range(row, df):
     end = int(round(row['cumu_prob'], 2) * 100)
     return f"{start:02d}-{end:02d}"
 
-def simulate_queue(customers, inter_arrival_times, inter_arrival_probs, service_times, service_probs, random_arrival, random_service):
+def simulate_queue(customers, inter_arrival_times, inter_arrival_probs, service_times, service_probs, random_arrival, random_service, close):
     df_time = pd.DataFrame({
     'arrival_time': inter_arrival_times,
     'prob': inter_arrival_probs
@@ -68,13 +68,13 @@ def simulate_queue(customers, inter_arrival_times, inter_arrival_probs, service_
             BeginS = EndS 
         else:
             BeginS = Arrival 
-
-        if((row == 5*i) and (EndS > Arrival)) :
-            BeginS = EndS + 10  
-            i += 1
-        elif((row == 5*i) and (EndS < Arrival)) :
-            BeginS = Arrival + 10 
-            i += 1 
+        if close:
+            if((row == 5*i) and (EndS > Arrival)) :
+                BeginS = EndS + 10  
+                i += 1
+            elif((row == 5*i) and (EndS < Arrival)) :
+                BeginS = Arrival + 10 
+                i += 1 
 
         IDe = BeginS- EndS  if (row > 0) else 0
         rowArray.append(BeginS )#Begin S(t)
@@ -125,6 +125,8 @@ with col2:
     input5 = st.text_input('probs', default_service_probs, key='input5')
     input6 = st.text_input('randoms', default_random_service, key='input6')
 
+close = st.checkbox('Close after each five customers', value=False)
+
 valid_inputs = True
 
     # Split the inputs by spaces and convert to lists of numbers
@@ -144,7 +146,7 @@ except ValueError:
 if st.button('Simulate'):
     if valid_inputs:
         df_1, df_2, df_3 = simulate_queue(customers = costomers, inter_arrival_times = inter_arrival_times, inter_arrival_probs = inter_arrival_probs, 
-                                      service_times = service_times, service_probs = service_probs, random_arrival = random_arrival, random_service = random_service)
+                                      service_times = service_times, service_probs = service_probs, random_arrival = random_arrival, random_service = random_service, close = close)
         # Use streamlit_columns to create two columns
         col1, col2 = st.columns(2)
 
